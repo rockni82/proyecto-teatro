@@ -25,7 +25,7 @@ export class Teatro {
    
     // opción 1
     verProgramacionActual() {
-        console.log('Hoy rep❤resentamos La cena de los idiotas, género: Comedia, Duración: 95');    
+        console.log('Hoy representamos La cena de los idiotas, género: Comedia, Duración: 95');    
         console.log('En C/Sol 45, local de 300 metros, con 2 accesos');
         console.log('Precio: 30.0');                    
     }
@@ -165,6 +165,118 @@ export class Teatro {
         const precioEntrada = obtenerPrecioEntrada(tipo);
 
         console.log(`Se ha vendido la localidad ${fila}.${columna} a ${nombre} por ${precioEntrada} euros`);
+        
+    }
+
+    // opción 5
+    async cancelarLocalidad(rlp) {
+        
+        // solicitamos la fila
+        const fila: string = await rlp.questionAsync(
+            '¿Fila (0-4)?\n');
+
+        // validación de la fila
+        const filaNumero = Number(fila);
+        if((filaNumero < 0) || (filaNumero > 4)) {
+            console.log('No existe la fila');
+            return;
+        }
+
+        // solicitamos la columna
+        const columna: string = await rlp.questionAsync(
+            '¿Butaca (0-9)?\n');
+
+        // validación de la columna
+        const columnaNumero = +columna;
+        if((columnaNumero < 0) || (columnaNumero > 9)) {
+            console.log('No existe la butaca');
+            return;
+        }
+
+        // buscar la localidad que tenga la fila y la columna introducidas por el usuario
+        const localidadEncontrada = 
+         this.localidades.find(localidad => 
+            (filaNumero === localidad.fila) &&
+            (columnaNumero === localidad.columna)  
+         );
+        
+        if(!localidadEncontrada.estaOcupada) {
+            console.log('Localidad no ocupada');
+            return;
+        }
+        
+        console.log(`${localidadEncontrada.nombreReserva} ha cancelado su reserva`);        
+        
+        // cancela la localidad
+        localidadEncontrada.nombreReserva = undefined;
+        localidadEncontrada.estaOcupada = false;
+        localidadEncontrada.edadReserva = undefined;
+        localidadEncontrada.telefonoReserva = undefined;
+
+    }
+
+    // opción 6
+    async consultarLocalidad(rlp) {
+
+        // solicitamos la fila
+        const fila: string = await rlp.questionAsync(
+            '¿Fila (0-4)?\n');
+
+        // validación de la fila
+        const filaNumero = Number(fila);
+        if((filaNumero < 0) || (filaNumero > 4)) {
+            console.log('No existe la fila');
+            return;
+        }
+
+        // solicitamos la columna
+        const columna: string = await rlp.questionAsync(
+            '¿Butaca (0-9)?\n');
+
+        // validación de la columna
+        const columnaNumero = +columna;
+        if((columnaNumero < 0) || (columnaNumero > 9)) {
+            console.log('No existe la butaca');
+            return;
+        }
+
+        // buscar la localidad que tenga la fila y la columna introducidas por el usuario
+        const localidadEncontrada = 
+         this.localidades.find(localidad => 
+            (filaNumero === localidad.fila) &&
+            (columnaNumero === localidad.columna)  
+         );
+
+         // si la localidad no está ocupada
+        if(!localidadEncontrada.estaOcupada) {
+            console.log('Localidad libre');
+            return;
+        }
+
+        const tipo = obtenerTipo(localidadEncontrada.edadReserva);
+        const precio = obtenerPrecioEntrada(tipo);
+        
+        console.log(`Localidad ocupada por ${localidadEncontrada.nombreReserva}, tlf: ${localidadEncontrada.telefonoReserva}, Tipo: ${tipo}, Precio: ${precio}`);
+    }
+
+    // opción 7
+    calcularRecaudacion() {
+
+        let recaudacion = 0;
+
+        // forEach
+        this.localidades.forEach(localidad => {
+
+            // si la localidad está ocupada, entonces calculamos el precio y lo sumamos a la recaudación
+            if(localidad.estaOcupada) {
+
+                const tipo = obtenerTipo(localidad.edadReserva);
+                const precio = obtenerPrecioEntrada(tipo);
+                recaudacion += precio;
+            }
+        })
+
+        console.log(`Recaudación: ${recaudacion} euros`);
         
     }
 }
